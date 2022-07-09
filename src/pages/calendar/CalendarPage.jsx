@@ -1,11 +1,13 @@
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import NavBar from "../../components/ui/NavBar";
 import moment from "moment";
 import { momentLocalizer, Calendar } from "react-big-calendar";
+import { useTheme } from "@mui/material";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useTheme } from "@mui/material";
+
+import NavBar from "../../components/ui/NavBar";
+import CalendarEvent from "../../components/calendar/CalendarEvent";
 
 const localizer = momentLocalizer(moment);
 
@@ -16,6 +18,11 @@ const CalendarPage = () => {
       title: "Eugenio's Birthday",
       start: moment().toDate(),
       end: moment().add(2, "hours").toDate(),
+      //All add the info of the user so everyone knows who made the event
+      user: {
+        _id: 1233445,
+        name: "Jalinson",
+      },
     },
   ];
 
@@ -48,6 +55,9 @@ const CalendarPage = () => {
           endAccessor="end"
           events={events}
           eventPropGetter={eventStyleGetter}
+          components={{
+            event: CalendarEvent,
+          }}
         />
       </Grid>
     </Grid>
