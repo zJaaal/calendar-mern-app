@@ -3,12 +3,14 @@ import Typography from "@mui/material/Typography";
 import moment from "moment";
 import { momentLocalizer, Calendar } from "react-big-calendar";
 import { useTheme } from "@mui/material";
+import { useState } from "react";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import NavBar from "../../components/ui/NavBar";
 import CalendarEvent from "../../components/calendar/CalendarEvent";
-import { useState } from "react";
+import CalendarModal from "../../components/calendar/CalendarModal";
+import useOpen from "../../hooks/useOpen";
 
 const localizer = momentLocalizer(moment);
 
@@ -18,6 +20,7 @@ const CalendarPage = () => {
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
   );
+  const { open, handleOpen, handleClose } = useOpen(false);
 
   const events = [
     {
@@ -34,6 +37,8 @@ const CalendarPage = () => {
 
   const onDoubleClick = (e) => {
     console.log(e);
+
+    handleOpen();
   };
 
   const onSelect = (e) => {
@@ -84,6 +89,7 @@ const CalendarPage = () => {
           }}
         />
       </Grid>
+      <CalendarModal open={open} handleClose={handleClose} />
     </Grid>
   );
 };
