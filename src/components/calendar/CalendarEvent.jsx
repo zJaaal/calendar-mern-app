@@ -6,9 +6,7 @@ const CalendarEvent = ({ event }) => {
   return (
     <Box>
       <Typography variant="subtitle2">{title}</Typography>
-      <Typography variant="caption" component={"strong"}>
-        - {user.name}
-      </Typography>
+      <Typography variant="caption">- {user.name}</Typography>
     </Box>
   );
 };

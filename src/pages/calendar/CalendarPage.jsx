@@ -8,11 +8,17 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import NavBar from "../../components/ui/NavBar";
 import CalendarEvent from "../../components/calendar/CalendarEvent";
+import { useState } from "react";
 
 const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
   const theme = useTheme();
+
+  const [lastView, setLastView] = useState(
+    localStorage.getItem("last-view") || "month"
+  );
+
   const events = [
     {
       title: "Eugenio's Birthday",
@@ -26,6 +32,19 @@ const CalendarPage = () => {
     },
   ];
 
+  const onDoubleClick = (e) => {
+    console.log(e);
+  };
+
+  const onSelect = (e) => {
+    console.log(e);
+  };
+
+  const onViewChange = (e) => {
+    setLastView(e);
+    localStorage.setItem("last-view", e);
+  };
+
   const eventStyleGetter = (event, start, end, isSelected) => {
     const style = {
       backgroundColor: `${theme.palette.primary.main}`,
@@ -36,6 +55,7 @@ const CalendarPage = () => {
     };
     return { style };
   };
+
   return (
     <Grid container item xs direction={"column"} rowSpacing={1}>
       <Grid item xs={1}>
@@ -54,7 +74,11 @@ const CalendarPage = () => {
           startAccessor="start"
           endAccessor="end"
           events={events}
+          view={lastView}
           eventPropGetter={eventStyleGetter}
+          onDoubleClickEvent={onDoubleClick}
+          onSelectEvent={onSelect}
+          onView={onViewChange}
           components={{
             event: CalendarEvent,
           }}
