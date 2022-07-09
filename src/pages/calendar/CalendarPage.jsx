@@ -21,13 +21,13 @@ const CalendarPage = () => {
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     const style = {
-      backgroundColor: `${theme.palette.primary.light}`,
+      backgroundColor: `${theme.palette.primary.main}`,
       borderRadius: "0px",
       opacity: 0.8,
       color: "white",
       display: "block",
     };
-    return style;
+    return { style };
   };
   return (
     <Grid container item xs direction={"column"} rowSpacing={1}>
