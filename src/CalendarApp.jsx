@@ -1,21 +1,15 @@
-import "./App.css";
-import { createTheme, CssBaseline, Paper, Typography } from "@mui/material";
-import { ThemeProvider } from "@emotion/react";
+import "./CalendarApp.css";
+import { CssBaseline, Paper, Button } from "@mui/material";
+import AppRouter from "./routes/AppRouter";
 
 function CalendarApp() {
-  const theme = createTheme({
-    palette: {
-      mode: "dark",
-    },
-  });
-
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <Paper>
-        <Typography variant="h3">Hello World</Typography>
+        <AppRouter />
       </Paper>
-    </ThemeProvider>
+    </>
   );
 }
 
