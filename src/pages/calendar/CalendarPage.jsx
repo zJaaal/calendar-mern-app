@@ -36,8 +36,6 @@ const CalendarPage = () => {
   ];
 
   const onDoubleClick = (e) => {
-    console.log(e);
-
     handleOpen();
   };
 

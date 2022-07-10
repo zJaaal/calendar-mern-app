@@ -18,9 +18,11 @@ import moment from "moment";
 
 const CalendarModal = ({ open, handleClose }) => {
   //This might change
-  const dateNow = moment().add(1, "hours").toDate();
-  const [value, setValue] = useState(dateNow);
-  const [value2, setValue2] = useState(dateNow);
+  //Keep the validations as they are
+  const dateNow = moment().moment;
+  const dateAfter = moment().add(1, "hours").toDate();
+  const [startDate, setStartDate] = useState(dateNow);
+  const [endDate, setEndDate] = useState(dateAfter);
 
   const style = {
     position: "absolute",
@@ -36,8 +38,8 @@ const CalendarModal = ({ open, handleClose }) => {
 
   return (
     <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
+      aria-labelledby="New Event"
+      aria-describedby="Here you can create new events"
       open={open}
       onClose={handleClose}
       closeAfterTransition
@@ -50,38 +52,45 @@ const CalendarModal = ({ open, handleClose }) => {
         <Box sx={style}>
           <Grid container direction="column" p={2} rowSpacing={2}>
             <Grid item container alignItems={"center"}>
+              <Grid item marginRight={1}>
+                <ScheduleIcon color="primary" />
+              </Grid>
               <Grid item>
                 <Typography variant="h5" gutterBottom>
                   New Event
                 </Typography>
               </Grid>
-              <Grid item marginLeft={1}>
-                <ScheduleIcon color="primary" />
-              </Grid>
             </Grid>
             <Divider />
             <LocalizationProvider dateAdapter={AdapterMoment}>
-              <Grid item container columnSpacing={2} marginTop={1}>
+              <Grid
+                item
+                container
+                columnSpacing={2}
+                marginTop={1}
+                justifyContent={"space-evenly"}
+              >
                 <Grid item>
                   <DateTimePicker
                     renderInput={(props) => <TextField {...props} />}
                     label="Initial Day and Time"
-                    value={value}
-                    onChange={(newValue) => {
-                      setValue(newValue);
+                    value={startDate}
+                    onChange={(newDate) => {
+                      setStartDate(newDate);
                     }}
-                    minDate={moment().Moment}
+                    minDate={dateNow}
                   />
                 </Grid>
                 <Grid item>
                   <DateTimePicker
                     renderInput={(props) => <TextField {...props} />}
                     label="End Day and Time"
-                    value={value2}
-                    onChange={(newValue) => {
-                      setValue2(newValue);
+                    value={endDate}
+                    onChange={(newDate) => {
+                      setEndDate(newDate);
                     }}
-                    minDate={value}
+                    minDate={startDate}
+                    minDateTime={startDate}
                   />
                 </Grid>
               </Grid>
