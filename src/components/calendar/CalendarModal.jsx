@@ -63,13 +63,7 @@ const CalendarModal = ({ open, handleClose }) => {
             </Grid>
             <Divider />
             <LocalizationProvider dateAdapter={AdapterMoment}>
-              <Grid
-                item
-                container
-                columnSpacing={2}
-                marginTop={1}
-                justifyContent={"space-evenly"}
-              >
+              <Grid item container columnSpacing={2} marginTop={1}>
                 <Grid item>
                   <DateTimePicker
                     renderInput={(props) => <TextField {...props} />}
