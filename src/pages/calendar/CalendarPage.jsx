@@ -2,20 +2,26 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import moment from "moment";
 import { momentLocalizer, Calendar } from "react-big-calendar";
-import { useTheme } from "@mui/material";
+import { useTheme, IconButton, Button } from "@mui/material";
 import { useState } from "react";
-
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import { useDispatch, useSelector } from "react-redux/es/exports";
+import AddIcon from "@mui/icons-material/Add";
 
 import NavBar from "../../components/ui/NavBar";
 import CalendarEvent from "../../components/calendar/CalendarEvent";
 import CalendarModal from "../../components/calendar/CalendarModal";
 import useOpen from "../../hooks/useOpen";
+import { eventSetActive } from "../../actions/events";
+
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
   const theme = useTheme();
+
+  const dispatch = useDispatch();
+  const calendar = useSelector((state) => state.calendar);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
@@ -40,7 +46,8 @@ const CalendarPage = () => {
   };
 
   const onSelect = (e) => {
-    console.log(e);
+    dispatch(eventSetActive(e));
+    handleOpen();
   };
 
   const onViewChange = (e) => {
@@ -88,6 +95,20 @@ const CalendarPage = () => {
         />
       </Grid>
       <CalendarModal open={open} handleClose={handleClose} />
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          position: "fixed",
+          bottom: "25px",
+          right: "25px",
+          borderRadius: "100%",
+          padding: "15px",
+        }}
+        onClick={handleOpen}
+      >
+        <AddIcon fontSize="large" />
+      </Button>
     </Grid>
   );
 };
