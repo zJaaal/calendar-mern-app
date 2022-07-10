@@ -1,6 +1,6 @@
 import moment from "moment";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
   Fade,
@@ -19,27 +19,34 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 
 import { eventAddNew } from "../../actions/events";
 
+//This might change
+//Keep the validations as they are
+const dateNow = moment();
+const dateAfter = moment().add(1, "hours");
+
+const initialError = "";
+const initialFormValues = {
+  title: "",
+  note: "",
+  start: dateNow,
+  end: dateAfter,
+};
+
 const CalendarModal = ({ open, handleClose }) => {
-  const initialError = "";
-  //This might change
-  //Keep the validations as they are
-  const dateNow = moment().moment;
-  const dateAfter = moment().add(1, "hours");
-
   const dispatch = useDispatch();
+  const { activeEvent } = useSelector((state) => state.calendar);
 
-  const [startDate, setStartDate] = useState(dateNow);
-  const [endDate, setEndDate] = useState(dateAfter);
   const [error, setError] = useState(initialError);
 
-  const [formValues, setFormValues] = useState({
-    title: "",
-    note: "",
-    start: dateNow,
-    end: dateAfter,
-  });
+  const [formValues, setFormValues] = useState(initialFormValues);
 
-  const { note, title } = formValues;
+  const { note, title, start, end } = formValues;
+
+  useEffect(() => {
+    if (!activeEvent) return;
+
+    setFormValues(activeEvent);
+  }, [activeEvent]);
 
   const handleInputChange = ({ target }) => {
     setFormValues((state) => ({
@@ -49,7 +56,6 @@ const CalendarModal = ({ open, handleClose }) => {
   };
 
   const handleStartDateChange = (e) => {
-    setStartDate(e);
     setError(initialError);
     setFormValues((state) => ({
       ...state,
@@ -58,7 +64,6 @@ const CalendarModal = ({ open, handleClose }) => {
   };
 
   const handleEndDateChange = (e) => {
-    setEndDate(e);
     setError(initialError);
     setFormValues((state) => ({
       ...state,
@@ -68,17 +73,24 @@ const CalendarModal = ({ open, handleClose }) => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (!formValues.start || !formValues.end)
-      return alert("Please enter the dates");
+    if (!start || !end) return alert("Please enter the dates");
 
     setError(initialError);
 
-    if (formValues.start.isAfter(formValues.end)) {
+    if (start.isAfter(end)) {
       setError("End date is before Start date");
     }
-    console.log(formValues);
 
-    dispatch(eventAddNew(formValues));
+    dispatch(
+      eventAddNew({
+        ...formValues,
+        id: Date.now(),
+        user: { _id: 12321312, name: "Jalinson" },
+        start: start.toDate(),
+        end: end.toDate(),
+      })
+    );
+    setFormValues(initialFormValues);
     handleClose();
   };
 
@@ -128,7 +140,7 @@ const CalendarModal = ({ open, handleClose }) => {
                       <TextField {...props} helperText={error} />
                     )}
                     label="Initial Day and Time"
-                    value={startDate}
+                    value={start}
                     name="start"
                     onChange={handleStartDateChange}
                     minDateTime={dateNow}
@@ -138,10 +150,10 @@ const CalendarModal = ({ open, handleClose }) => {
                   <DateTimePicker
                     renderInput={(props) => <TextField {...props} />}
                     label="End Day and Time"
-                    value={endDate}
+                    value={end}
                     name="end"
                     onChange={handleEndDateChange}
-                    minDate={startDate}
+                    minDate={moment(start)}
                   />
                 </Grid>
               </Grid>

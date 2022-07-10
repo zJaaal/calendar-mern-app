@@ -21,25 +21,12 @@ const CalendarPage = () => {
   const theme = useTheme();
 
   const dispatch = useDispatch();
-  const calendar = useSelector((state) => state.calendar);
+  const { events } = useSelector((state) => state.calendar);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
   );
   const { open, handleOpen, handleClose } = useOpen(false);
-
-  const events = [
-    {
-      title: "Eugenio's Birthday",
-      start: moment().toDate(),
-      end: moment().add(2, "hours").toDate(),
-      //All add the info of the user so everyone knows who made the event
-      user: {
-        _id: 1233445,
-        name: "Jalinson",
-      },
-    },
-  ];
 
   const onDoubleClick = (e) => {
     handleOpen();
@@ -47,7 +34,6 @@ const CalendarPage = () => {
 
   const onSelect = (e) => {
     dispatch(eventSetActive(e));
-    handleOpen();
   };
 
   const onViewChange = (e) => {
