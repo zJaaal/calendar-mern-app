@@ -17,7 +17,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
-import { eventAddNew } from "../../actions/events";
+import { eventAddNew, eventCleanActive } from "../../actions/events";
+import { uiCloseModal } from "../../actions/ui";
 
 //This might change
 //Keep the validations as they are
@@ -32,21 +33,32 @@ const initialFormValues = {
   end: dateAfter,
 };
 
-const CalendarModal = ({ open, handleClose }) => {
+const CalendarModal = () => {
   const dispatch = useDispatch();
   const { activeEvent } = useSelector((state) => state.calendar);
+  const { isOpen } = useSelector((state) => state.ui);
 
   const [error, setError] = useState(initialError);
 
   const [formValues, setFormValues] = useState(initialFormValues);
 
+  useEffect(() => {
+    if (!activeEvent) {
+      setFormValues(initialFormValues);
+    } else
+      setFormValues({
+        ...activeEvent,
+        start: moment(activeEvent.start),
+        end: moment(activeEvent.end),
+      }); //Calendar works with date object and Picker with Moment object
+  }, [activeEvent]);
+
   const { note, title, start, end } = formValues;
 
-  useEffect(() => {
-    if (!activeEvent) return;
-
-    setFormValues(activeEvent);
-  }, [activeEvent]);
+  const handleClose = () => {
+    dispatch(eventCleanActive());
+    dispatch(uiCloseModal());
+  };
 
   const handleInputChange = ({ target }) => {
     setFormValues((state) => ({
@@ -110,15 +122,16 @@ const CalendarModal = ({ open, handleClose }) => {
     <Modal
       aria-labelledby="New Event"
       aria-describedby="Here you can create new events"
-      open={open}
+      open={isOpen}
       onClose={handleClose}
+      onRequest
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
         timeout: 500,
       }}
     >
-      <Fade in={open}>
+      <Fade in={isOpen}>
         <Box sx={style} component="form" onSubmit={handleFormSubmit}>
           <Grid container direction="column" p={2} rowSpacing={2}>
             <Grid item container alignItems={"center"}>

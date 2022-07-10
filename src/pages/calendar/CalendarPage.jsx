@@ -10,10 +10,10 @@ import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/ui/NavBar";
 import CalendarEvent from "../../components/calendar/CalendarEvent";
 import CalendarModal from "../../components/calendar/CalendarModal";
-import useOpen from "../../hooks/useOpen";
 import { eventSetActive } from "../../actions/events";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { uiOpenModal } from "../../actions/ui";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,10 +26,9 @@ const CalendarPage = () => {
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
   );
-  const { open, handleOpen, handleClose } = useOpen(false);
 
   const onDoubleClick = (e) => {
-    handleOpen();
+    dispatch(uiOpenModal());
   };
 
   const onSelect = (e) => {
@@ -80,7 +79,7 @@ const CalendarPage = () => {
           }}
         />
       </Grid>
-      <CalendarModal open={open} handleClose={handleClose} />
+      <CalendarModal />
       <Button
         variant="contained"
         color="primary"
@@ -91,7 +90,7 @@ const CalendarPage = () => {
           borderRadius: "100%",
           padding: "15px",
         }}
-        onClick={handleOpen}
+        onClick={() => dispatch(uiOpenModal())}
       >
         <AddIcon fontSize="large" />
       </Button>
