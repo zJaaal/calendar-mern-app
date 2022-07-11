@@ -12,13 +12,19 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
-import { eventAddNew, eventCleanActive } from "../../actions/events";
+import {
+  eventAddNew,
+  eventCleanActive,
+  eventUpdated,
+} from "../../actions/events";
 import { uiCloseModal } from "../../actions/ui";
+import Save from "@mui/icons-material/Save";
 
 //This might change
 //Keep the validations as they are
@@ -39,7 +45,6 @@ const CalendarModal = () => {
   const { isOpen } = useSelector((state) => state.ui);
 
   const [error, setError] = useState(initialError);
-
   const [formValues, setFormValues] = useState(initialFormValues);
 
   useEffect(() => {
@@ -93,15 +98,26 @@ const CalendarModal = () => {
       setError("End date is before Start date");
     }
 
-    dispatch(
-      eventAddNew({
-        ...formValues,
-        id: Date.now(),
-        user: { _id: 12321312, name: "Jalinson" },
-        start: start.toDate(),
-        end: end.toDate(),
-      })
-    );
+    if (activeEvent) {
+      dispatch(
+        eventUpdated({
+          ...formValues,
+          start: start.toDate(),
+          end: end.toDate(),
+        })
+      );
+    } else {
+      dispatch(
+        eventAddNew({
+          ...formValues,
+          id: Date.now(),
+          user: { _id: 12321312, name: "Jalinson" },
+          start: start.toDate(),
+          end: end.toDate(),
+        })
+      );
+    }
+
     setFormValues(initialFormValues);
     handleClose();
   };
@@ -140,7 +156,7 @@ const CalendarModal = () => {
               </Grid>
               <Grid item>
                 <Typography variant="h5" gutterBottom>
-                  New Event
+                  {!activeEvent ? "New Event" : "Update Event"}
                 </Typography>
               </Grid>
             </Grid>
@@ -166,7 +182,7 @@ const CalendarModal = () => {
                     value={end}
                     name="end"
                     onChange={handleEndDateChange}
-                    minDate={moment(start)}
+                    minDateTime={moment(start)}
                   />
                 </Grid>
               </Grid>
@@ -198,8 +214,14 @@ const CalendarModal = () => {
               />
             </Grid>
             <Grid item xs>
-              <Button variant="contained" color="info" type="submit" fullWidth>
-                Create
+              <Button
+                variant="contained"
+                color="info"
+                type="submit"
+                endIcon={<SaveIcon />}
+                fullWidth
+              >
+                Save
               </Button>
             </Grid>
           </Grid>

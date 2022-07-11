@@ -1,19 +1,24 @@
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import moment from "moment";
+
 import { momentLocalizer, Calendar } from "react-big-calendar";
-import { useTheme, IconButton, Button } from "@mui/material";
+import { Grid, Typography, useTheme, Button } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux/es/exports";
+
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import NavBar from "../../components/ui/NavBar";
 import CalendarEvent from "../../components/calendar/CalendarEvent";
 import CalendarModal from "../../components/calendar/CalendarModal";
-import { eventSetActive } from "../../actions/events";
+import {
+  eventCleanActive,
+  eventDeleteActive,
+  eventSetActive,
+} from "../../actions/events";
+import { uiOpenModal } from "../../actions/ui";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { uiOpenModal } from "../../actions/ui";
 
 const localizer = momentLocalizer(moment);
 
@@ -21,7 +26,7 @@ const CalendarPage = () => {
   const theme = useTheme();
 
   const dispatch = useDispatch();
-  const { events } = useSelector((state) => state.calendar);
+  const { events, activeEvent } = useSelector((state) => state.calendar);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
@@ -33,6 +38,10 @@ const CalendarPage = () => {
 
   const onSelect = (e) => {
     dispatch(eventSetActive(e));
+  };
+
+  const onSelectSlot = () => {
+    dispatch(eventCleanActive());
   };
 
   const onViewChange = (e) => {
@@ -72,6 +81,8 @@ const CalendarPage = () => {
           view={lastView}
           eventPropGetter={eventStyleGetter}
           onDoubleClickEvent={onDoubleClick}
+          onSelectSlot={onSelectSlot}
+          selectable={true}
           onSelectEvent={onSelect}
           onView={onViewChange}
           components={{
@@ -94,6 +105,22 @@ const CalendarPage = () => {
       >
         <AddIcon fontSize="large" />
       </Button>
+      {activeEvent && (
+        <Button
+          variant="contained"
+          color="error"
+          sx={{
+            position: "fixed",
+            bottom: "25px",
+            left: "25px",
+            borderRadius: "100%",
+            padding: "15px",
+          }}
+          onClick={() => dispatch(eventDeleteActive())}
+        >
+          <DeleteIcon fontSize="large" />
+        </Button>
+      )}
     </Grid>
   );
 };
