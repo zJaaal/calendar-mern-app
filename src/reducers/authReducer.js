@@ -1,5 +1,7 @@
 const initialState = {
-  //Here goes my auth state
+  checking: true,
+  // uid: null,
+  // name: null,
 };
 
 export const authReducer = (state = initialState, action) => {
