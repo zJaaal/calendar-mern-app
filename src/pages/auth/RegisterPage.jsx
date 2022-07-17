@@ -2,7 +2,30 @@ import { Grid, Typography, Paper, TextField, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import CreateIcon from "@mui/icons-material/Create";
+import useForm from "../../hooks/useForm";
+import { useDispatch } from "react-redux";
+import { startRegister } from "../../actions/auth";
+
+const initialFormValues = {
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
 const RegisterPage = () => {
+  const dispatch = useDispatch();
+
+  const [formValues, handleInputChange] = useForm(initialFormValues);
+
+  const { name, email, password, confirmPassword } = formValues;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password != confirmPassword) return alert("Passwords doesn't match");
+    dispatch(startRegister(name, email, password));
+  };
+
   return (
     <Grid container item xs justifyContent={"center"} alignItems={"center"}>
       <Grid
@@ -14,6 +37,8 @@ const RegisterPage = () => {
         xl={6}
         alignItems={"center"}
         height={"70%"}
+        component="form"
+        onSubmit={handleSubmit}
       >
         <Paper
           elevation={4}
@@ -36,37 +61,57 @@ const RegisterPage = () => {
             <Grid item xs>
               <TextField
                 id="name-input"
-                label="Email"
+                label="Name"
+                name="name"
+                value={name}
                 variant="standard"
                 type={"text"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
               <TextField
                 id="email-input"
                 label="Email"
+                name="email"
+                value={email}
                 variant="standard"
                 type={"text"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
               <TextField
                 id="password-input"
                 label="Password"
+                name="password"
+                value={password}
                 variant="standard"
                 type={"password"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
               <TextField
                 id="confirm-input"
                 label="Confirm Password"
+                name="confirmPassword"
+                value={confirmPassword}
                 variant="standard"
                 type={"password"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
@@ -74,6 +119,7 @@ const RegisterPage = () => {
                 variant="contained"
                 color="primary"
                 endIcon={<HowToRegIcon />}
+                type="submit"
                 fullWidth
               >
                 Create Account
