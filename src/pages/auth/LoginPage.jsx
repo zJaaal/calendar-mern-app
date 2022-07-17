@@ -1,9 +1,27 @@
 import { Grid, Typography, Paper, TextField, Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import LoginIcon from "@mui/icons-material/Login";
+import useForm from "../../hooks/useForm";
+import { startLogin } from "../../actions/auth";
+
+const initialFormValues = {
+  email: "",
+  password: "",
+};
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
+  const [formValues, handleInputChange, reset] = useForm(initialFormValues);
+
+  const { email, password } = formValues;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(startLogin(email, password));
+  };
+
   return (
     <Grid container item xs justifyContent={"center"} alignItems={"center"}>
       <Grid
@@ -15,6 +33,8 @@ const LoginPage = () => {
         xl={6}
         alignItems={"center"}
         height={"70%"}
+        component="form"
+        onSubmit={handleSubmit}
       >
         <Paper
           elevation={4}
@@ -38,18 +58,28 @@ const LoginPage = () => {
               <TextField
                 id="email-input"
                 label="Email"
+                name="email"
+                value={email}
                 variant="standard"
                 type={"text"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
               <TextField
                 id="password-input"
                 label="Password"
+                name="password"
+                value={password}
                 variant="standard"
                 type={"password"}
+                onChange={handleInputChange}
+                autoComplete="off"
                 fullWidth
+                required
               />
             </Grid>
             <Grid item xs>
@@ -57,6 +87,7 @@ const LoginPage = () => {
                 variant="contained"
                 color="primary"
                 endIcon={<LoginIcon />}
+                type="submit"
                 fullWidth
               >
                 Login
