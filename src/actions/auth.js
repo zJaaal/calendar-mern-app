@@ -1,5 +1,6 @@
 import { loginUser, registerUser, renewToken } from "../axios/axios";
 import { types } from "../types/types";
+import { eventLogout } from "./events";
 
 //Async actions
 
@@ -77,6 +78,7 @@ const login = (user) => ({
 export const startLogout = () => (dispatch) => {
   localStorage.clear();
   dispatch(logout());
+  dispatch(eventLogout());
 };
 
 const logout = () => ({
