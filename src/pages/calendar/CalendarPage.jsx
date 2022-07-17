@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { momentLocalizer, Calendar } from "react-big-calendar";
 import { Grid, Typography, useTheme, Button } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux/es/exports";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -13,8 +13,9 @@ import CalendarEvent from "../../components/calendar/CalendarEvent";
 import CalendarModal from "../../components/calendar/CalendarModal";
 import {
   eventCleanActive,
-  eventDeleteActive,
   eventSetActive,
+  startEventDelete,
+  startEventsLoad,
 } from "../../actions/events";
 import { uiOpenModal } from "../../actions/ui";
 
@@ -27,10 +28,15 @@ const CalendarPage = () => {
 
   const dispatch = useDispatch();
   const { events, activeEvent } = useSelector((state) => state.calendar);
+  const { uid } = useSelector((state) => state.auth);
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("last-view") || "month"
   );
+
+  useEffect(() => {
+    dispatch(startEventsLoad());
+  }, [dispatch]);
 
   const onDoubleClick = (e) => {
     dispatch(uiOpenModal());
@@ -51,7 +57,11 @@ const CalendarPage = () => {
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     const style = {
-      backgroundColor: `${theme.palette.primary.main}`,
+      backgroundColor: `${
+        uid === event.user._id
+          ? theme.palette.primary.main
+          : theme.palette.grey["900"]
+      }`,
       borderRadius: "0px",
       opacity: 0.8,
       color: "white",
@@ -65,6 +75,39 @@ const CalendarPage = () => {
       <Grid item xs={1}>
         <NavBar />
       </Grid>
+      <CalendarModal />
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          position: "fixed",
+          bottom: "25px",
+          right: "25px",
+          borderRadius: "100%",
+          padding: "15px",
+          zIndex: 100,
+        }}
+        onClick={() => dispatch(uiOpenModal())}
+      >
+        <AddIcon fontSize="large" />
+      </Button>
+      {activeEvent && (
+        <Button
+          variant="contained"
+          color="error"
+          sx={{
+            position: "fixed",
+            bottom: "25px",
+            left: "25px",
+            borderRadius: "100%",
+            padding: "15px",
+            zIndex: 200,
+          }}
+          onClick={() => dispatch(startEventDelete())}
+        >
+          <DeleteIcon fontSize="large" />
+        </Button>
+      )}
       <Grid
         item
         xs
@@ -90,37 +133,6 @@ const CalendarPage = () => {
           }}
         />
       </Grid>
-      <CalendarModal />
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{
-          position: "fixed",
-          bottom: "25px",
-          right: "25px",
-          borderRadius: "100%",
-          padding: "15px",
-        }}
-        onClick={() => dispatch(uiOpenModal())}
-      >
-        <AddIcon fontSize="large" />
-      </Button>
-      {activeEvent && (
-        <Button
-          variant="contained"
-          color="error"
-          sx={{
-            position: "fixed",
-            bottom: "25px",
-            left: "25px",
-            borderRadius: "100%",
-            padding: "15px",
-          }}
-          onClick={() => dispatch(eventDeleteActive())}
-        >
-          <DeleteIcon fontSize="large" />
-        </Button>
-      )}
     </Grid>
   );
 };

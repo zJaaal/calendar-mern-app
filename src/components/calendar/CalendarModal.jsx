@@ -19,9 +19,9 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
 import {
-  eventAddNew,
   eventCleanActive,
-  eventUpdated,
+  eventStartAddNew,
+  startEventUpdate,
 } from "../../actions/events";
 import { uiCloseModal } from "../../actions/ui";
 import Save from "@mui/icons-material/Save";
@@ -34,13 +34,14 @@ const dateAfter = moment().add(1, "hours");
 const initialError = "";
 const initialFormValues = {
   title: "",
-  note: "",
+  notes: "",
   start: dateNow,
   end: dateAfter,
 };
 
 const CalendarModal = () => {
   const dispatch = useDispatch();
+  const { uid, name } = useSelector((state) => state.auth);
   const { activeEvent } = useSelector((state) => state.calendar);
   const { isOpen } = useSelector((state) => state.ui);
 
@@ -48,6 +49,7 @@ const CalendarModal = () => {
   const [formValues, setFormValues] = useState(initialFormValues);
 
   useEffect(() => {
+    setError(initialError);
     if (!activeEvent) {
       setFormValues(initialFormValues);
     } else
@@ -58,7 +60,7 @@ const CalendarModal = () => {
       }); //Calendar works with date object and Picker with Moment object
   }, [activeEvent]);
 
-  const { note, title, start, end } = formValues;
+  const { notes, title, start, end } = formValues;
 
   const handleClose = () => {
     dispatch(eventCleanActive());
@@ -95,12 +97,16 @@ const CalendarModal = () => {
     setError(initialError);
 
     if (start.isAfter(end)) {
-      setError("End date is before Start date");
+      return setError("End date is before Start date");
+    }
+
+    if (notes != undefined && !notes.trim().length) {
+      delete formValues.notes;
     }
 
     if (activeEvent) {
       dispatch(
-        eventUpdated({
+        startEventUpdate({
           ...formValues,
           start: start.toDate(),
           end: end.toDate(),
@@ -108,10 +114,8 @@ const CalendarModal = () => {
       );
     } else {
       dispatch(
-        eventAddNew({
+        eventStartAddNew({
           ...formValues,
-          id: Date.now(),
-          user: { _id: 12321312, name: "Jalinson" },
           start: start.toDate(),
           end: end.toDate(),
         })
@@ -165,9 +169,7 @@ const CalendarModal = () => {
               <Grid item container columnSpacing={2} marginTop={1}>
                 <Grid item>
                   <DateTimePicker
-                    renderInput={(props) => (
-                      <TextField {...props} helperText={error} />
-                    )}
+                    renderInput={(props) => <TextField {...props} />}
                     label="Initial Day and Time"
                     value={start}
                     name="start"
@@ -177,12 +179,14 @@ const CalendarModal = () => {
                 </Grid>
                 <Grid item>
                   <DateTimePicker
-                    renderInput={(props) => <TextField {...props} />}
+                    renderInput={(props) => (
+                      <TextField {...props} helperText={error} />
+                    )}
                     label="End Day and Time"
                     value={end}
                     name="end"
                     onChange={handleEndDateChange}
-                    minDateTime={moment(start)}
+                    minDateTime={moment(start).add(1, "hours")}
                   />
                 </Grid>
               </Grid>
@@ -205,8 +209,8 @@ const CalendarModal = () => {
                 multiline
                 id="Note"
                 label="Note"
-                name="note"
-                value={note}
+                name="notes"
+                value={notes}
                 rows={6}
                 onChange={handleInputChange}
                 placeholder={"Here you can add details"}
